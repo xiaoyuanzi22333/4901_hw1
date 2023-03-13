@@ -3,6 +3,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from torchvision.models import resnet50, ResNet50_Weights
+
 
 class CNNClassifier(torch.nn.Module):
     def __init__(self):
@@ -10,12 +12,29 @@ class CNNClassifier(torch.nn.Module):
         """
         Your code here
         """
+        
+        self.weights = ResNet50_Weights.DEFAULT
+        self.resnet = resnet50(weights=self.weights)
+        self.mlp = nn.Sequential(
+            nn.Linear(2048,1024),
+            nn.ReLU(inplace=True),
+            nn.Linear(1024,6)
+        )
+        
         raise NotImplementedError('CNNClassifier.__init__') 
 
     def forward(self, x):
         """
         Your code here
         """
+        
+        out1 = self.resnet(x)
+        avg = torch.nn.functional.adaptive_avg_pool2d(out1, (1,1))
+        avg = (avg.squeeze()).squeeze()
+        output = self.mlp(avg)
+        
+        return output
+        
         raise NotImplementedError('CNNClassifier.forward') 
 
 
@@ -83,6 +102,12 @@ class SoftmaxCrossEntropyLoss(nn.Module):
         Hint: Implement a Softmax-CrossEntropy loss for classification
         Hint: return loss, F.cross_entropy(inputs, targets)
         """
+        truth = torch.exp(inputs[targets])
+        sum = torch.sum(torch.exp(inputs))
+        output = torch.log(-truth/sum)
+        
+        return output
+        
         raise NotImplementedError('SoftmaxCrossEntropyLoss.__init__')
 
 

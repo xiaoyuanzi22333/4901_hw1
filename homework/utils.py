@@ -21,7 +21,26 @@ class VehicleClassificationDataset(Dataset):
         # e.g., Bicycle 0, Car 1, Taxi 2, Bus 3, Truck 4, Van 5
         self.data = []
         self.label = []
-
+        
+        g = os.walk(dataset_path)
+        for path,dir_list,file_list in g:
+            for file_name in file_list:
+                name = path + '/' + file_name
+                self.data.append(name)
+                if path[-1] == 'e':
+                    self.label.append(0)
+                elif path[-1] == 'r':
+                    self.label.append(1)
+                elif path[-1] == 'i':
+                    self.label.append(2)
+                elif path[-1] == 's':
+                    self.label.append(3)
+                elif path[-1] == 'k':
+                    self.label.append(4)
+                elif path[-1] == 'n':
+                    self.label.append(5)
+                
+                
         raise NotImplementedError('VehicleClassificationDataset.__init__')
          
 
@@ -29,6 +48,8 @@ class VehicleClassificationDataset(Dataset):
         """
         Your code here
         """
+        return len(self.data)
+    
         raise NotImplementedError('VehicleClassificationDataset.__len__')
 
     def __getitem__(self, idx):
@@ -37,6 +58,16 @@ class VehicleClassificationDataset(Dataset):
         Hint: generate samples for training
         Hint: return image, and its image-level class label
         """
+        img_path = self.data[idx]
+        label = self.label[idx]
+        
+        img = Image.open(img_path)
+        
+        transform = transforms.Compose([transforms.ToTensor()])
+        img = transform(img)
+        
+        return img,label
+        
         raise NotImplementedError('VehicleClassificationDataset.__getitem__')
 
 
