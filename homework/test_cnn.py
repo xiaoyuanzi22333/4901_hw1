@@ -14,6 +14,11 @@ def test(args):
     Hint: load the saved checkpoint of your model, and perform evaluation for the vehicle classification task
     Hint: use the ConfusionMatrix for you to calculate accuracy
     """
+    writer = tb.SummaryWriter('cnn')
+    
+    
+    logger.add_scalar('train/loss', t_loss, epoch)
+    
     return accuracy
 
 
