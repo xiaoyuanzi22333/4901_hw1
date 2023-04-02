@@ -9,6 +9,8 @@ from torchvision import transforms
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import functional as F
 
+import cv2
+
 import dense_transforms
 
 
@@ -26,6 +28,7 @@ class VehicleClassificationDataset(Dataset):
         for path,dir_list,file_list in g:
             for file_name in file_list:
                 name = path + '/' + file_name
+                
                 self.data.append(name)
                 if path[-1] == 'e':
                     self.label.append(0)
@@ -41,7 +44,7 @@ class VehicleClassificationDataset(Dataset):
                     self.label.append(5)
                 
                 
-        raise NotImplementedError('VehicleClassificationDataset.__init__')
+        # raise NotImplementedError('VehicleClassificationDataset.__init__')
          
 
     def __len__(self):
@@ -50,7 +53,7 @@ class VehicleClassificationDataset(Dataset):
         """
         return len(self.data)
     
-        raise NotImplementedError('VehicleClassificationDataset.__len__')
+        # raise NotImplementedError('VehicleClassificationDataset.__len__')
 
     def __getitem__(self, idx):
         """
@@ -61,14 +64,22 @@ class VehicleClassificationDataset(Dataset):
         img_path = self.data[idx]
         label = self.label[idx]
         
-        img = Image.open(img_path)
+        # print(img_path)
+        
+        img = cv2.imread(img_path)
+        img = cv2.resize(img,(256,256))
+        
+        # print(img.shape)
         
         transform = transforms.Compose([transforms.ToTensor()])
         img = transform(img)
         
+        
+        
+        
         return img,label
         
-        raise NotImplementedError('VehicleClassificationDataset.__getitem__')
+        # raise NotImplementedError('VehicleClassificationDataset.__getitem__')
 
 
 class DenseCityscapesDataset(Dataset):

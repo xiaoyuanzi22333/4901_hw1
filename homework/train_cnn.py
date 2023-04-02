@@ -15,22 +15,37 @@ def train(args):
     """
     Your code here
     """
-    datapath = '../train_set'
-    dataset = load_data(dataset_path = datapath)
-    loss_fn = SoftmaxCrossEntropyLoss
-    optimizer = optim.Adam(model.parameters(),lr = 1e-3, betas = (0.5, 0.999))
-    num_epochs = 10
+    cuda_device = 0
+    batch_size = 64
     
-    for epoch in num_epochs:
+    datapath = './train_subset'
+    dataset = load_data(dataset_path = datapath,batch_size = batch_size)
+    loss_fn = SoftmaxCrossEntropyLoss
+    optimizer = torch.optim.Adam(model.parameters(),lr = 1e-3, betas = (0.5, 0.999))
+    num_epochs = 30
+    
+    model = model.cuda(cuda_device)
+    # loss_fn = loss_fn.cuda(cuda_device)
+    # optimizer = optimizer.cuda(cuda_device)
+    
+    print("model's device is: ", next(model.parameters()).device)
+    
+    for epoch in range(num_epochs):
         print("it is at epoch: ", epoch)
         for x,label in tqdm(dataset):
-            if len(x) != batch_size:
+            x = x.cuda(cuda_device)
+            label = label.cuda(cuda_device)
+            
+            if len(x) != 128:
                 continue
+            print(x.shape)
             scores = model(x)
             loss = loss_fn(scores,label)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            
+        train_logger.add_scalar('loss',loss,epoch)
 
 if __name__ == '__main__':
     import argparse

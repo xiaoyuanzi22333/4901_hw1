@@ -21,7 +21,7 @@ class CNNClassifier(torch.nn.Module):
             nn.Linear(1024,6)
         )
         
-        raise NotImplementedError('CNNClassifier.__init__') 
+        # raise NotImplementedError('CNNClassifier.__init__') 
 
     def forward(self, x):
         """
@@ -35,7 +35,7 @@ class CNNClassifier(torch.nn.Module):
         
         return output
         
-        raise NotImplementedError('CNNClassifier.forward') 
+        # raise NotImplementedError('CNNClassifier.forward') 
 
 
 class FCN_ST(torch.nn.Module):
