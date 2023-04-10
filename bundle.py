@@ -16,8 +16,9 @@ if __name__ == "__main__":
     for f in glob.glob(path.join(args.homework, '**')):
         if all(b not in f for b in BLACKLIST):
             files.append(f)
-
-    if "homework/cls_results.pdf" and "homework/densepred_results.pdf" not in files:
+            
+    print(files)
+    if "homework\\cls_results.pdf" and "homework\\densepred_results.pdf" not in files:
         print("Warning: no results file found!")
         raise SystemExit("Please make sure you put your results and the download link to the corresponding model checkpoints into the pdf documents as instructed!!!")
 

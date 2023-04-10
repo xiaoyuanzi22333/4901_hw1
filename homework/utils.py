@@ -27,6 +27,8 @@ class VehicleClassificationDataset(Dataset):
         g = os.walk(dataset_path)
         for path,dir_list,file_list in g:
             for file_name in file_list:
+                if file_name == '.DS_Store':
+                    continue
                 name = path + '/' + file_name
                 
                 self.data.append(name)
@@ -66,12 +68,12 @@ class VehicleClassificationDataset(Dataset):
         
         # print(img_path)
         
-        img = cv2.imread(img_path)
-        img = cv2.resize(img,(256,256))
+        img = Image.open(img_path)
         
         # print(img.shape)
         
-        transform = transforms.Compose([transforms.ToTensor()])
+        transform = transforms.Compose([transforms.ToTensor(),
+                                       transforms.Resize([224,224])])
         img = transform(img)
         
         
@@ -87,14 +89,37 @@ class DenseCityscapesDataset(Dataset):
         """
         Your code here
         """
-        raise NotImplementedError('DenseCityscapesDataset.__init__')
+        self.img = []
+        self.label = []
+        self.depth = []
+        self.transformer = transforms.ToTensor()
+        
+        img_path = dataset_path + '/image'
+        label_path = dataset_path + '/label'
+        depth_path = dataset_path + '/depth'
+        
+        if os.path.exists(img_path+'/.DS_Store'):
+            self.length = len(os.listdir(img_path)) - 1
+        else:
+            self.length = len(os.listdir(img_path))
+                        
+        for i in os.listdir(img_path):
+            if i == '.DS_Store':
+                continue
+            self.img.append(img_path + '/' + i)
+            self.label.append(label_path + '/' + i)
+            self.depth.append(depth_path + '/' + i)
+        
+        # raise NotImplementedError('DenseCityscapesDataset.__init__')
 
     def __len__(self):
 
         """
         Your code here
         """
-        raise NotImplementedError('DenseCityscapesDataset.__len__')
+        return self.length
+        
+        # raise NotImplementedError('DenseCityscapesDataset.__len__')
 
     def __getitem__(self, idx):
 
@@ -102,7 +127,17 @@ class DenseCityscapesDataset(Dataset):
         Hint: generate samples for training
         Hint: return image, semantic_GT, and depth_GT
         """
-        raise NotImplementedError('DenseCityscapesDataset.__getitem__')
+        # image = self.transformer(np.load(self.img[idx]))
+        
+        label = self.transformer(np.load(self.label[idx]))
+        depth = self.transformer(np.load(self.depth[idx]))
+        image = self.transformer(np.load(self.img[idx]))
+        
+        # print(image.shape)
+        
+        return image, label, depth
+        
+        # raise NotImplementedError('DenseCityscapesDataset.__getitem__')
 
 
 class DenseVisualization():
